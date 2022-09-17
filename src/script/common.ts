@@ -1,0 +1,2 @@
+// developmentやprod
+console.log('hoge');
