@@ -10,18 +10,29 @@ module.exports = {
     path: path.resolve(__dirname, '../dist'),
     publicPath: '/dist/'
   },
-  devtool: 'none',
   module: {
     rules: [
       {
         test: /\.ts$/,
         use: 'ts-loader',
         exclude: /node_modules/
+      },
+      {
+        test: /\.css$/,
+        use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader']
       }
     ]
+  },
+  optimization: {
+    minimizer: [new CssMinimizerPlugin()]
   },
   resolve: {
     extensions: ['.ts', '.js']
   },
-  plugins: [new CleanWebpackPlugin()]
+  plugins: [
+    new CleanWebpackPlugin(),
+    new MiniCssExtractPlugin({
+      filename: '.src/stylesheet/style.css'
+    })
+  ]
 };

@@ -1,2 +1,2 @@
 // developmentやprod
-console.log('hoge');
+console.log('hogehogt');
