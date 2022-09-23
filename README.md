@@ -7,14 +7,15 @@
 
 ## 仕様
 
-- TODO の追加
-- TODO の削除
-- TODO の編集
+- TODOの追加
+- TODOの削除
+- TODOの編集
   　- サブタスクの追加
   　- 詳細の記述
   　- 期限の設定
-- TODO の並び替え
-- TODO のフィルター
+- TODOの並び替え
+- TODOのフィルター
+- TODOの完了の有無（チェック） 
 - 完了した TODO リスト
 
 ## Webpack
