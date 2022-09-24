@@ -102,16 +102,22 @@
           <!-- Replace with your content -->
           <div class="px-4 py-6 sm:px-0">
             <ul
+              id="js-todo-list"
               class="h-96 rounded-lg border-4 border-dashed border-gray-200 overflow-scroll"
-            >
-              <li class="border border-solid border-gray-100 p-2">
-                TODO LIST ITEM
-              </li>
-            </ul>
+            ></ul>
           </div>
           <!-- /End replace -->
         </div>
       </main>
+    </div>
+    <div class="mb-6">
+      <input
+        type="text"
+        id="js-todo-title"
+        value=""
+        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        placeholder="TODOの内容"
+      />
     </div>
     <button id="js-add-todo">
       <svg
