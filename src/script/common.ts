@@ -11,11 +11,25 @@ const appendTodoList = (event: any) => {
   );
   const todoTitle: string = todoTitleElement.value;
 
-  const listItem = `
-  <li class="border-bottom border-solid border-gray-100 p-2">${todoTitle}</li>
-`;
-  todoList?.insertAdjacentHTML('afterbegin', listItem);
+  registerLocalLocalStrage(todoTitle);
+  showList();
+  // todoList?.insertAdjacentHTML('afterbegin', listItem);
   todoTitleElement.value = '';
+};
+
+const registerLocalLocalStrage = (value: string) => {
+  localStorage.setItem(localStorage.length.toString(), value);
+};
+
+const showList = () => {
+  for (let i = 0; i < localStorage.length; i++) {
+    todoList!.insertAdjacentHTML(
+      'afterbegin',
+      `<li class="border border-solid border-gray-100 p-2">${localStorage.getItem(
+        localStorage.key(i)
+      )}</li>`
+    );
+  }
 };
 
 addTodoButton!.addEventListener('click', appendTodoList);
