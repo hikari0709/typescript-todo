@@ -9,17 +9,35 @@
 // developmentやprod
 const addTodoButton = document.getElementById('js-add-todo');
 const todoList = document.getElementById('js-todo-list');
-//const todoTitle = todoTitleElement?.value;
 const appendTodoList = (event) => {
     event.preventDefault();
     const todoTitleElement = (document.getElementById('js-todo-title'));
     const todoTitle = todoTitleElement.value;
-    const listItem = `
-  <li class="border border-solid border-gray-100 p-2">${todoTitle}</li>
-`;
-    todoList === null || todoList === void 0 ? void 0 : todoList.insertAdjacentHTML('afterbegin', listItem);
+    registerLocalLocalStrage(todoTitle);
+    emptyTodoList();
+    showList();
+    // todoList?.insertAdjacentHTML('afterbegin', listItem);
     todoTitleElement.value = '';
 };
+const registerLocalLocalStrage = (value) => {
+    localStorage.setItem(localStorage.length.toString(), value);
+};
+const showList = () => {
+    if (localStorage.length === 0)
+        return;
+    for (let i = 0; i < localStorage.length; i++) {
+        todoList.insertAdjacentHTML('afterbegin', `<li class="border border-solid border-gray-100 p-2">${localStorage.getItem(localStorage[i] || '{}')}</li>`);
+    }
+};
+const emptyTodoList = () => {
+    const cloneList = todoList.cloneNode(false);
+    console.log(typeof todoList);
+    //todoList?.replaceWith(cloneList);
+};
+function initialize() {
+    showList();
+}
+initialize();
 addTodoButton.addEventListener('click', appendTodoList);
 
 
@@ -95,7 +113,7 @@ addTodoButton.addEventListener('click', appendTodoList);
 /******/ 	
 /******/ 	/* webpack/runtime/getFullHash */
 /******/ 	(() => {
-/******/ 		__webpack_require__.h = () => ("0d67a0285aa6c38dac05")
+/******/ 		__webpack_require__.h = () => ("27a2b96dcddb37fb3c32")
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
