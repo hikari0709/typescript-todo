@@ -26,7 +26,7 @@ const showList = () => {
     if (localStorage.length === 0)
         return;
     for (let i = 0; i < localStorage.length; i++) {
-        todoList.insertAdjacentHTML('afterbegin', `<li class="border border-solid border-gray-100 p-2">${localStorage.getItem(localStorage[i] || '{}')}</li>`);
+        todoList.insertAdjacentHTML('afterbegin', `<li class="p-2">${localStorage.getItem(`${i}`)}</li>`);
     }
 };
 const emptyTodoList = () => {
@@ -113,7 +113,7 @@ addTodoButton.addEventListener('click', appendTodoList);
 /******/ 	
 /******/ 	/* webpack/runtime/getFullHash */
 /******/ 	(() => {
-/******/ 		__webpack_require__.h = () => ("27a2b96dcddb37fb3c32")
+/******/ 		__webpack_require__.h = () => ("6aa4ceff9140bca4a8c4")
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */

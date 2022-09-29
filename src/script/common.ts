@@ -26,16 +26,13 @@ const showList = () => {
   for (let i = 0; i < localStorage.length; i++) {
     todoList.insertAdjacentHTML(
       'afterbegin',
-      `<li class="border border-solid border-gray-100 p-2">${localStorage.getItem(
-        localStorage[i] || '{}'
-      )}</li>`
+      `<li class="p-2">${localStorage.getItem(`${i}`)}</li>`
     );
   }
 };
 
 const emptyTodoList = () => {
   const cloneList: Node = todoList.cloneNode(false);
-  console.log(typeof todoList);
   //todoList?.replaceWith(cloneList);
 };
 
