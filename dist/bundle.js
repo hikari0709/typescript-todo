@@ -8,37 +8,69 @@
 
 // developmentやprod
 const addTodoButton = document.getElementById('js-add-todo');
+const clearTodoButton = document.getElementById('js-clear-todo');
 const todoList = document.getElementById('js-todo-list');
-const appendTodoList = (event) => {
+const appendHandler = (event) => {
     event.preventDefault();
+    registerLocalStorage();
+    appendListItem();
+};
+// TODOに登録する【タイトル】の取得
+const getTodoTitle = () => {
     const todoTitleElement = (document.getElementById('js-todo-title'));
     const todoTitle = todoTitleElement.value;
-    registerLocalLocalStrage(todoTitle);
-    emptyTodoList();
-    showList();
-    // todoList?.insertAdjacentHTML('afterbegin', listItem);
     todoTitleElement.value = '';
+    return todoTitle;
 };
-const registerLocalLocalStrage = (value) => {
+// 取得した値をlocalStorageに保存
+const registerLocalStorage = () => {
+    const value = getTodoTitle();
     localStorage.setItem(localStorage.length.toString(), value);
 };
-const showList = () => {
+// リストに新しく追加されたTODOを追加
+const appendListItem = () => {
+    if (!todoList)
+        return;
+    const value = getTodoTitle();
+    console.log(value);
+    const listItem = document.createElement('li');
+    listItem.classList.add('p-2');
+    listItem.innerText = value;
+    todoList.appendChild(listItem);
+};
+const showListItem = () => {
+    if (!todoList)
+        return;
     if (localStorage.length === 0)
         return;
     for (let i = 0; i < localStorage.length; i++) {
         todoList.insertAdjacentHTML('afterbegin', `<li class="p-2">${localStorage.getItem(`${i}`)}</li>`);
     }
 };
-const emptyTodoList = () => {
-    const cloneList = todoList.cloneNode(false);
-    console.log(typeof todoList);
-    //todoList?.replaceWith(cloneList);
+// const updateList = () => {
+//   const cloneList: Node = todoList.cloneNode(false);
+//   todoList.replaceWith(cloneList);
+// };
+/*
+  はじめにlacalStoreから呼び出して、データ一覧を取得
+  取得したデータを変数に格納する
+  格納した変数データを表示させる
+  TODOが追加されたら場合データの一番後ろに追加してもらう
+*/
+// const emptyTodoList = () => {
+//   const cloneList: Node = todoList.cloneNode(false);
+//   // 置き換えでなく中身をなくすのが良さそう
+//   todoList.replaceWith(cloneList);
+// };
+const clearStorage = () => {
+    localStorage.clear();
 };
 function initialize() {
-    showList();
+    showListItem();
 }
 initialize();
-addTodoButton.addEventListener('click', appendTodoList);
+addTodoButton.addEventListener('click', appendHandler);
+clearTodoButton.addEventListener('click', clearStorage);
 
 
 /***/ })
@@ -113,7 +145,7 @@ addTodoButton.addEventListener('click', appendTodoList);
 /******/ 	
 /******/ 	/* webpack/runtime/getFullHash */
 /******/ 	(() => {
-/******/ 		__webpack_require__.h = () => ("6aa4ceff9140bca4a8c4")
+/******/ 		__webpack_require__.h = () => ("b83769a1cb57ccf8fb99")
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
