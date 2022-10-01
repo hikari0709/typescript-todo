@@ -1,4 +1,4 @@
-// developmentやprod
+// Elementの取得
 const addTodoButton: HTMLElement = document.getElementById('js-add-todo')!;
 const clearTodoButton: HTMLElement = document.getElementById('js-clear-todo')!;
 const todoList: HTMLElement | null = document.getElementById('js-todo-list');
@@ -33,6 +33,7 @@ const appendListItem = (): void => {
   todoList.prepend(listItem);
 };
 
+// リロードした際にlacalStorageにあるデータを表示する
 const showListItem = (): void => {
   if (!todoList) return;
   if (localStorage.length === 0) return;
