@@ -6,7 +6,7 @@
 /***/ (() => {
 
 
-// developmentやprod
+// Elementの取得
 const addTodoButton = document.getElementById('js-add-todo');
 const clearTodoButton = document.getElementById('js-clear-todo');
 const todoList = document.getElementById('js-todo-list');
@@ -35,13 +35,18 @@ const appendListItem = () => {
     const listItem = createListItem();
     todoList.prepend(listItem);
 };
+// リロードした際にlacalStorageにあるデータを表示する
 const showListItem = () => {
     if (!todoList)
         return;
     if (localStorage.length === 0)
         return;
     for (let i = 0; i < localStorage.length; i++) {
-        todoList.insertAdjacentHTML('afterbegin', `<li class="p-2">${localStorage.getItem(`${i}`)}</li>`);
+        const value = localStorage.getItem(`${i}`);
+        if (!value)
+            return;
+        const listItem = createListItem(value);
+        todoList.prepend(listItem);
     }
 };
 // const updateList = () => {
@@ -59,8 +64,8 @@ const showListItem = () => {
 //   // 置き換えでなく中身をなくすのが良さそう
 //   todoList.replaceWith(cloneList);
 // };
-const createListItem = () => {
-    const value = getTodoTitle();
+const createListItem = (argument) => {
+    const value = argument ? argument : getTodoTitle();
     const listItem = document.createElement('li');
     listItem.classList.add('p-2');
     listItem.innerText = value;
@@ -149,7 +154,7 @@ clearTodoButton.addEventListener('click', clearStorage);
 /******/ 	
 /******/ 	/* webpack/runtime/getFullHash */
 /******/ 	(() => {
-/******/ 		__webpack_require__.h = () => ("e75c2d295f7bacea4957")
+/******/ 		__webpack_require__.h = () => ("927690647d187f3614f8")
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */

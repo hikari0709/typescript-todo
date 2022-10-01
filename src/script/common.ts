@@ -38,10 +38,10 @@ const showListItem = (): void => {
   if (!todoList) return;
   if (localStorage.length === 0) return;
   for (let i = 0; i < localStorage.length; i++) {
-    todoList.insertAdjacentHTML(
-      'afterbegin',
-      `<li class="p-2">${localStorage.getItem(`${i}`)}</li>`
-    );
+    const value = localStorage.getItem(`${i}`)
+    if (!value) return;
+    const listItem = createListItem(value);
+    todoList.prepend(listItem);
   }
 };
 
@@ -63,8 +63,8 @@ const showListItem = (): void => {
 //   todoList.replaceWith(cloneList);
 // };
 
-const createListItem = () => {
-  const value = getTodoTitle();
+const createListItem = (argument?: string) => {
+  const value = argument ? argument : getTodoTitle();
   const listItem: HTMLElement = document.createElement('li');
   listItem.classList.add('p-2');
   listItem.innerText = value;
