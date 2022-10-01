@@ -551,6 +551,10 @@ video {
   --tw-backdrop-sepia:  ;
 }
 
+.col-span-10 {
+  grid-column: span 10 / span 10;
+}
+
 .mx-auto {
   margin-left: auto;
   margin-right: auto;
@@ -600,8 +604,12 @@ video {
   max-width: 80rem;
 }
 
-.grid-cols-3 {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+.grid-cols-12 {
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+}
+
+.content-center {
+  align-content: center;
 }
 
 .items-center {
