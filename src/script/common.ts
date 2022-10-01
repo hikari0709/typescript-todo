@@ -29,12 +29,8 @@ const registerLocalStorage = (): void => {
 // リストに新しく追加されたTODOを追加
 const appendListItem = (): void => {
   if (!todoList) return;
-  const value = getTodoTitle();
-  console.log(value);
-  const listItem: HTMLElement = document.createElement('li');
-  listItem.classList.add('p-2');
-  listItem.innerText = value;
-  todoList.appendChild(listItem);
+  const listItem = createListItem();
+  todoList.prepend(listItem);
 };
 
 const showListItem = (): void => {
@@ -65,6 +61,14 @@ const showListItem = (): void => {
 //   // 置き換えでなく中身をなくすのが良さそう
 //   todoList.replaceWith(cloneList);
 // };
+
+const createListItem = () => {
+  const value = getTodoTitle();
+  const listItem: HTMLElement = document.createElement('li');
+  listItem.classList.add('p-2');
+  listItem.innerText = value;
+  return listItem;
+};
 
 const clearStorage = (): void => {
   localStorage.clear();

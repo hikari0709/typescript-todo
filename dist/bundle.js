@@ -19,7 +19,8 @@ const appendHandler = (event) => {
 const getTodoTitle = () => {
     const todoTitleElement = (document.getElementById('js-todo-title'));
     const todoTitle = todoTitleElement.value;
-    todoTitleElement.value = '';
+    // inputのリセットのタイミングがうまくいかない
+    // todoTitleElement.value = '';
     return todoTitle;
 };
 // 取得した値をlocalStorageに保存
@@ -31,12 +32,8 @@ const registerLocalStorage = () => {
 const appendListItem = () => {
     if (!todoList)
         return;
-    const value = getTodoTitle();
-    console.log(value);
-    const listItem = document.createElement('li');
-    listItem.classList.add('p-2');
-    listItem.innerText = value;
-    todoList.appendChild(listItem);
+    const listItem = createListItem();
+    todoList.prepend(listItem);
 };
 const showListItem = () => {
     if (!todoList)
@@ -62,6 +59,13 @@ const showListItem = () => {
 //   // 置き換えでなく中身をなくすのが良さそう
 //   todoList.replaceWith(cloneList);
 // };
+const createListItem = () => {
+    const value = getTodoTitle();
+    const listItem = document.createElement('li');
+    listItem.classList.add('p-2');
+    listItem.innerText = value;
+    return listItem;
+};
 const clearStorage = () => {
     localStorage.clear();
 };
@@ -145,7 +149,7 @@ clearTodoButton.addEventListener('click', clearStorage);
 /******/ 	
 /******/ 	/* webpack/runtime/getFullHash */
 /******/ 	(() => {
-/******/ 		__webpack_require__.h = () => ("b83769a1cb57ccf8fb99")
+/******/ 		__webpack_require__.h = () => ("e75c2d295f7bacea4957")
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
