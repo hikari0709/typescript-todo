@@ -24,7 +24,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --hot --config ./webpack/webpack.prod.js && npm run style",
     "start": "webpack-dev-server --hot --inline --config ./webpack/webpack.dev.js",
-    "style": "npx tailwindcss -i ./src/stylesheet/style.css -o ./dist/style.css"
+    "style": "npx tailwindcss -i ./src/stylesheet/style.css -o ./dist/style.css --watch"
   },
   "keywords": [],
   "author": "",
