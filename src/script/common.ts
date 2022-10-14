@@ -1,12 +1,49 @@
 // Elementの取得
 const addTodoButton: HTMLElement = document.getElementById('js-add-todo')!;
 const clearTodoButton: HTMLElement = document.getElementById('js-clear-todo')!;
-const todoList: HTMLElement | null = document.getElementById('js-todo-list');
+const todoList: HTMLElement = document.getElementById('js-todo-list')!;
+const deleteTodo: HTMLElement = document.querySelector('.js-delete-todo')!;
+
+type listItemType = `
+  <li ${string}>
+    ${string}
+    <button ${string}>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        height="24px" viewBox="0 0 24 24"
+        fill="#000000"
+      >
+        <path
+          d="M0 0h24v24H0V0z"
+          fill="none"
+        />
+        <path
+          d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM5.92 19H5v-.92l9.06-9.06.92.92L5.92 19zM20.71 5.63l-2.34-2.34c-.2-.2-.45-.29-.71-.29s-.51.1-.7.29l-1.83 1.83 3.75 3.75 1.83-1.83c.39-.39.39-1.02 0-1.41z"
+        />
+      </svg>
+    </button>
+    <button ${string}>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        height="24"
+        viewBox="0 0 24 24"
+        class="${string}"
+      >
+        <path d="M0 0h24v24H0z" fill="none" />
+        <path
+          d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+        />
+      </svg>
+    </button>
+  </li>
+`;
 
 const appendHandler = (event: any): void => {
   event.preventDefault();
   registerLocalStorage();
   appendListItem();
+  clearAddItemAfter();
+  deleteTodo.addEventListener('click', deleteListItem);
 };
 
 // TODOに登録する【タイトル】の取得
@@ -15,8 +52,6 @@ const getTodoTitle = () => {
     document.getElementById('js-todo-title')
   );
   const todoTitle: string = todoTitleElement.value;
-  // inputのリセットのタイミングがうまくいかない
-  // todoTitleElement.value = '';
   return todoTitle;
 };
 
@@ -30,7 +65,7 @@ const registerLocalStorage = (): void => {
 const appendListItem = (): void => {
   if (!todoList) return;
   const listItem = createListItem();
-  todoList.prepend(listItem);
+  todoList.insertAdjacentHTML('afterbegin', listItem);
 };
 
 // リロードした際にlacalStorageにあるデータを表示する
@@ -38,41 +73,66 @@ const showListItem = (): void => {
   if (!todoList) return;
   if (localStorage.length === 0) return;
   for (let i = 0; i < localStorage.length; i++) {
-    const value = localStorage.getItem(`${i}`)
+    const value = localStorage.getItem(`${i}`);
     if (!value) return;
-    const listItem = createListItem(value);
-    todoList.prepend(listItem);
+    const listItem = createListItem(value, i);
+    todoList.insertAdjacentHTML('afterbegin', listItem);
   }
 };
 
-// const updateList = () => {
-//   const cloneList: Node = todoList.cloneNode(false);
-//   todoList.replaceWith(cloneList);
-// };
+const deleteListItem = (): void => {
+  console.log('this');
+};
 
-/*
-  はじめにlacalStoreから呼び出して、データ一覧を取得
-  取得したデータを変数に格納する
-  格納した変数データを表示させる
-  TODOが追加されたら場合データの一番後ろに追加してもらう
-*/
-
-// const emptyTodoList = () => {
-//   const cloneList: Node = todoList.cloneNode(false);
-//   // 置き換えでなく中身をなくすのが良さそう
-//   todoList.replaceWith(cloneList);
-// };
-
-const createListItem = (argument?: string) => {
+const createListItem = (argument?: string, index?: number) => {
   const value = argument ? argument : getTodoTitle();
-  const listItem: HTMLElement = document.createElement('li');
-  listItem.classList.add('p-2');
-  listItem.innerText = value;
+  const listId = index ? index : localStorage.length;
+
+  const listItem: listItemType = `
+  <li id=${listId} class="p-2 grid grid-cols-12">
+    <p class="col-span-10">${value}</p>
+    <button class="col-span-1 js-edit-todo">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        height="24px" viewBox="0 0 24 24"
+        fill="#000000"
+      >
+        <path
+          d="M0 0h24v24H0V0z"
+          fill="none"
+        />
+        <path
+          d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM5.92 19H5v-.92l9.06-9.06.92.92L5.92 19zM20.71 5.63l-2.34-2.34c-.2-.2-.45-.29-.71-.29s-.51.1-.7.29l-1.83 1.83 3.75 3.75 1.83-1.83c.39-.39.39-1.02 0-1.41z"
+        />
+      </svg>
+    </button>
+    <button class="col-span-1 js-delete-todo">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        height="24"
+        viewBox="0 0 24 24"
+        class="w-5 h-5"
+      >
+        <path d="M0 0h24v24H0z" fill="none" />
+        <path
+          d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+        />
+      </svg>
+    </button>
+  </li>
+`;
   return listItem;
 };
 
-const clearStorage = (): void => {
+const clearAllStorageItems = (): void => {
   localStorage.clear();
+};
+
+const clearAddItemAfter = () => {
+  const todoTitleElement: HTMLInputElement = <HTMLInputElement>(
+    document.getElementById('js-todo-title')
+  );
+  todoTitleElement.value = '';
 };
 
 function initialize(): void {
@@ -80,6 +140,6 @@ function initialize(): void {
 }
 
 initialize();
-
+deleteTodo.addEventListener('click', deleteListItem);
 addTodoButton.addEventListener('click', appendHandler);
-clearTodoButton.addEventListener('click', clearStorage);
+clearTodoButton.addEventListener('click', clearAllStorageItems);
