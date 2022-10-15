@@ -55,6 +55,7 @@ function deleteListItem(event) {
     const id = event.target.closest('li').id;
     const target = document.getElementById(id);
     target && target.remove();
+    localStorage.removeItem(id);
 }
 // ListItemの生成
 const createListItem = (argument, index) => {
@@ -186,7 +187,7 @@ clearTodoButton.addEventListener('click', clearAllStorageItems);
 /******/ 	
 /******/ 	/* webpack/runtime/getFullHash */
 /******/ 	(() => {
-/******/ 		__webpack_require__.h = () => ("cd4b0b87ec1b420464b5")
+/******/ 		__webpack_require__.h = () => ("ba3857d9763e8b34c1b3")
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */

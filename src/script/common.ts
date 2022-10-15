@@ -87,6 +87,7 @@ function deleteListItem(event: any): void {
   const id = event.target.closest('li').id;
   const target = document.getElementById(id);
   target && target.remove();
+  localStorage.removeItem(id);
 }
 
 // ListItemの生成
