@@ -9,13 +9,16 @@ self["webpackHotUpdatetypescript_dev"](179,{
 const addTodoButton = document.getElementById('js-add-todo');
 const clearTodoButton = document.getElementById('js-clear-todo');
 const todoList = document.getElementById('js-todo-list');
+const modal = document.getElementById('js-defaultModal');
 const appendHandler = (event) => {
     event.preventDefault();
     registerLocalStorage();
     appendListItem();
     clearTextInput();
-    const deleteTodoList = document.querySelector('js-delete-todo');
+    const deleteTodoList = document.querySelector('.js-delete-todo');
+    const editTodoList = document.querySelector('.js-edit-todo');
     deleteTodoList && deleteTodoList.addEventListener('click', deleteListItem);
+    editTodoList && editTodoList.addEventListener('click', editListItem);
 };
 // TODOに登録する【タイトル】の取得
 const getTodoTitle = () => {
@@ -45,8 +48,10 @@ const showListItem = () => {
             return;
         const listItem = createListItem(value, i);
         todoList.insertAdjacentHTML('afterbegin', listItem);
-        const targetItem = document.querySelector('.js-delete-todo');
-        targetItem.addEventListener('click', deleteListItem);
+        const deleteTodoList = document.querySelector('.js-delete-todo');
+        const editTodoList = document.querySelector('.js-edit-todo');
+        deleteTodoList.addEventListener('click', deleteListItem);
+        editTodoList && editTodoList.addEventListener('click', editListItem);
     }
 };
 // リストアイテムの削除
@@ -56,6 +61,12 @@ function deleteListItem(event) {
     target && target.remove();
     localStorage.removeItem(id);
 }
+// リストアイテムの編集
+function editListItem(event) {
+    const id = event.target.closest('li').id;
+    modal.classList.remove('hidden');
+    modal.classList.add('bg-gray-900', 'bg-opacity-50', 'dark:bg-opacity-80', 'fixed', 'inset-0', 'z-40');
+}
 // ListItemの生成
 const createListItem = (argument, index) => {
     const value = argument ? argument : getTodoTitle();
@@ -63,7 +74,7 @@ const createListItem = (argument, index) => {
     const listItem = `
     <li id=${listId} class="p-2 grid grid-cols-12">
       <p class="col-span-10 border-r-2">${value}</p>
-      <button class="col-span-1 js-edit-todo">
+      <button class="col-span-1 js-edit-todo" data-modal-toggle="defaultModal">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           height="24px" viewBox="0 0 24 24"
@@ -120,7 +131,7 @@ clearTodoButton.addEventListener('click', clearAllStorageItems);
 /******/ function(__webpack_require__) { // webpackRuntimeModules
 /******/ /* webpack/runtime/getFullHash */
 /******/ (() => {
-/******/ 	__webpack_require__.h = () => ("ba3857d9763e8b34c1b3")
+/******/ 	__webpack_require__.h = () => ("96f7fab13114eb8cc96f")
 /******/ })();
 /******/ 
 /******/ }

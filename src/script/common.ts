@@ -2,6 +2,7 @@
 const addTodoButton: HTMLElement = document.getElementById('js-add-todo')!;
 const clearTodoButton: HTMLElement = document.getElementById('js-clear-todo')!;
 const todoList: HTMLElement = document.getElementById('js-todo-list')!;
+const modal: HTMLElement = document.getElementById('js-defaultModal')!;
 
 type listItemType = `
     <li ${string}>
@@ -43,8 +44,11 @@ const appendHandler = (event: any): void => {
   registerLocalStorage();
   appendListItem();
   clearTextInput();
-  const deleteTodoList: HTMLElement = document.querySelector('js-delete-todo')!;
+  const deleteTodoList: HTMLElement =
+    document.querySelector('.js-delete-todo')!;
+  const editTodoList: HTMLElement = document.querySelector('.js-edit-todo')!;
   deleteTodoList && deleteTodoList.addEventListener('click', deleteListItem);
+  editTodoList && editTodoList.addEventListener('click', editListItem);
 };
 
 // TODOに登録する【タイトル】の取得
@@ -77,8 +81,11 @@ const showListItem = (): void => {
     if (!value) return;
     const listItem = createListItem(value, i);
     todoList.insertAdjacentHTML('afterbegin', listItem);
-    const targetItem: HTMLElement = document.querySelector('.js-delete-todo')!;
-    targetItem.addEventListener('click', deleteListItem);
+    const deleteTodoList: HTMLElement =
+      document.querySelector('.js-delete-todo')!;
+    const editTodoList: HTMLElement = document.querySelector('.js-edit-todo')!;
+    deleteTodoList.addEventListener('click', deleteListItem);
+    editTodoList && editTodoList.addEventListener('click', editListItem);
   }
 };
 
@@ -90,6 +97,20 @@ function deleteListItem(event: any): void {
   localStorage.removeItem(id);
 }
 
+// リストアイテムの編集
+function editListItem(event: any): void {
+  const id = event.target.closest('li').id;
+  modal.classList.remove('hidden');
+  modal.classList.add(
+    'bg-gray-900',
+    'bg-opacity-50',
+    'dark:bg-opacity-80',
+    'fixed',
+    'inset-0',
+    'z-40'
+  );
+}
+
 // ListItemの生成
 const createListItem = (argument?: string, index?: number) => {
   const value = argument ? argument : getTodoTitle();
@@ -98,7 +119,7 @@ const createListItem = (argument?: string, index?: number) => {
   const listItem: listItemType = `
     <li id=${listId} class="p-2 grid grid-cols-12">
       <p class="col-span-10 border-r-2">${value}</p>
-      <button class="col-span-1 js-edit-todo">
+      <button class="col-span-1 js-edit-todo" data-modal-toggle="defaultModal">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           height="24px" viewBox="0 0 24 24"
