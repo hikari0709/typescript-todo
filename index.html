@@ -163,10 +163,9 @@
           <div
             class="flex justify-between items-start p-4 rounded-t border-b dark:border-gray-600"
           >
-            <p
-              id="js-edit-title"
-              class="text-xl font-semibold text-gray-900 dark:text-white"
-            ></p>
+            <p class="text-xl font-semibold text-gray-900 dark:text-white">
+              TODOの編集
+            </p>
             <button
               id="js-edit-close"
               type="button"
@@ -195,6 +194,19 @@
             >
               TODOの詳細はここに記載する予定。現在は編集できない状態。
             </p>
+            <label
+              class="block text-gray-700 text-sm font-bold mb-2"
+              for="js-edit-todoTitle"
+              id="js-current-todo-title"
+            >
+              TODOのタイトル
+            </label>
+            <input
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              id="js-edit-todoTitle"
+              type="text"
+              placeholder="新しいTODOのタイトルを入力"
+            />
           </div>
           <div
             class="flex items-center p-6 space-x-2 rounded-b border-t border-gray-200 dark:border-gray-600"
@@ -203,6 +215,7 @@
               data-modal-toggle="defaultModal"
               type="button"
               class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+              id="js-update-todo"
             >
               Update Todo
             </button>
