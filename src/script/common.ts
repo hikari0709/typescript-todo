@@ -3,6 +3,17 @@ const addTodoButton: HTMLElement = document.getElementById('js-add-todo')!;
 const clearTodoButton: HTMLElement = document.getElementById('js-clear-todo')!;
 const todoList: HTMLElement = document.getElementById('js-todo-list')!;
 const modal: HTMLElement = document.getElementById('js-defaultModal')!;
+const modalTitle: HTMLElement = document.getElementById('js-edit-title')!;
+const modalCloseBtn: HTMLElement = document.getElementById('js-edit-close')!;
+
+const modalClassSer = [
+  'bg-gray-900',
+  'bg-opacity-50',
+  'dark:bg-opacity-80',
+  'fixed',
+  'inset-0',
+  'z-40'
+];
 
 type listItemType = `
     <li ${string}>
@@ -100,15 +111,12 @@ function deleteListItem(event: any): void {
 // リストアイテムの編集
 function editListItem(event: any): void {
   const id = event.target.closest('li').id;
+  const title = event.target.closest('li').innerText;
+  modalTitle.innerText = title;
+
   modal.classList.remove('hidden');
-  modal.classList.add(
-    'bg-gray-900',
-    'bg-opacity-50',
-    'dark:bg-opacity-80',
-    'fixed',
-    'inset-0',
-    'z-40'
-  );
+  modal.classList.add(...modalClassSer);
+  modalCloseBtn.addEventListener('click', closeModal);
 }
 
 // ListItemの生成
@@ -164,6 +172,12 @@ const clearTextInput = () => {
     document.getElementById('js-todo-title')
   );
   todoTitleElement.value = '';
+};
+
+// 表示したmodalをクローズする
+const closeModal = () => {
+  modal.classList.add('hidden');
+  modal.classList.remove(...modalClassSer);
 };
 
 // 初期ローディング時に発火させる関数アセット
