@@ -49,6 +49,28 @@ type listItemType = `
     </li>
   `;
 
+type modalBody = `
+    <p
+      class="text-base leading-relaxed text-gray-500 dark:text-gray-400"
+    >
+      TODOの詳細はここに記載する予定。現在は編集できない状態。
+    </p>
+    <label
+      class="block text-gray-700 text-sm font-bold mb-2"
+      for="js-edit-todoTitle"
+      ${string}
+    >
+      現在のタイトル
+    </label>
+    <input
+      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+      id="js-edit-todoTitle"
+      type="text"
+      placeholder="新しいTODOのタイトルを入力"
+      value="${string}"
+    />
+  `;
+
 const appendHandler = (event: any): void => {
   event.preventDefault();
   registerLocalStorage();
@@ -111,11 +133,13 @@ function deleteListItem(event: any): void {
 function editListItem(event: any): void {
   const id = event.target.closest('li').id;
   const title = event.target.closest('li').innerText;
-  const currentTitle = document.getElementById('js-current-todo-title')!;
-  const editInput = document.getElementById('js-edit-todoTitle')!;
+  const modalBody = document.getElementById('js-editModal-body')!;
   const updateTodoBtn = document.getElementById('js-update-todo')!;
-  currentTitle.innerText = `現在のタイトル：${title}`;
-  currentTitle.setAttribute('data-id', id);
+  const modalBodyContent = jenerateModalBody(id, title);
+
+  modalBody.innerHTML = modalBodyContent;
+
+  const editInput = document.getElementById('js-edit-todoTitle')!;
 
   modal.classList.remove('hidden');
   modal.classList.add(...modalClassSer);
@@ -187,24 +211,55 @@ const closeModal = () => {
 
 // TODOリストタイトルの更新
 const updateTodo = () => {
-  const currentTitle = document.getElementById('js-current-todo-title')!;
+  // js-current-todo-title　→ 中身にタイトルの要素がないので命名を変更する
+  const label = document.getElementById('js-edit-label')!;
   const editInput = document.getElementById('js-edit-todoTitle')!;
-  const targetId = currentTitle.getAttribute('data-id')!;
+  const targetId = label.getAttribute('data-id')!;
   const targetList = document.querySelector(
     `#\\3${targetId} > .js-list-title`
   )!;
-  targetList.textContent = editInput.getAttribute('value')!;
+  const updateTitle = editInput.getAttribute('value')!;
+  targetList.textContent = updateTitle;
+  localStorage.setItem(targetId, updateTitle);
+  modal.classList.add('hidden');
+  modal.classList.remove(...modalClassSer);
 
-  // 入力したinputがそのまま
   //localStorageを更新できていない
 };
 
 // TODOのタイトルが変更された時
 const changeTodoTitle = (event: any) => {
   const value = event.target.value;
+  console.log(value);
   const editInput = document.getElementById('js-edit-todoTitle')!;
   editInput.setAttribute('value', value);
-  // editInput.value = '';
+};
+
+const jenerateModalBody = (id: number, title: string) => {
+  const modalBody: modalBody = `
+    <p
+      class="text-base leading-relaxed text-gray-500 dark:text-gray-400"
+    >
+      TODOの詳細はここに記載する予定。現在は編集できない状態。
+    </p>
+    <label
+      class="block text-gray-700 text-sm font-bold mb-2"
+      for="js-edit-todoTitle"
+      data-id="${id}"
+      id="js-edit-label"
+    >
+      現在のタイトル
+    </label>
+    <input
+      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+      id="js-edit-todoTitle"
+      type="text"
+      placeholder="新しいTODOのタイトルを入力"
+      value="${title}"
+    />
+  `;
+
+  return modalBody;
 };
 
 // 初期ローディング時に発火させる関数アセット
