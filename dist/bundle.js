@@ -92,7 +92,8 @@ const createListItem = (argument, index) => {
     const listId = index !== undefined ? index : localStorage.length - 1;
     const listItem = `
     <li id=${listId} class="p-2 grid grid-cols-12">
-      <p class="col-span-10 border-r-2 js-list-title">${value}</p>
+      <input id="default-checkbox" type="checkbox" value="" class="col-span-1 inline-block">
+      <p class="col-span-9 border-r-2 js-list-title">${value}</p>
       <button class="col-span-1 js-edit-todo" data-modal-toggle="defaultModal">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -267,7 +268,7 @@ clearTodoButton.addEventListener('click', clearAllStorageItems);
 /******/ 	
 /******/ 	/* webpack/runtime/getFullHash */
 /******/ 	(() => {
-/******/ 		__webpack_require__.h = () => ("88cb876252b397f3a065")
+/******/ 		__webpack_require__.h = () => ("539ceeee9cea0f168919")
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */

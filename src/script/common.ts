@@ -155,7 +155,8 @@ const createListItem = (argument?: string, index?: number) => {
 
   const listItem: listItemType = `
     <li id=${listId} class="p-2 grid grid-cols-12">
-      <p class="col-span-10 border-r-2 js-list-title">${value}</p>
+      <input id="default-checkbox" type="checkbox" value="" class="col-span-1 inline-block">
+      <p class="col-span-9 border-r-2 js-list-title">${value}</p>
       <button class="col-span-1 js-edit-todo" data-modal-toggle="defaultModal">
         <svg
           xmlns="http://www.w3.org/2000/svg"
