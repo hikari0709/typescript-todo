@@ -5,7 +5,13 @@ self["webpackHotUpdatetypescript_dev"](179,{
 /***/ (() => {
 
 
+// チェックしたものをリロードしたあとも保持させる
+// TODOの詳細を記述できるようにする
+// ※TODOの期限の設定、Googleへの連携
+// TODOのフィルター、並び替え
+// 完了したTODOのリスト→完了したものを戻すこともできるといいか
 // Elementの取得
+const data = (/* unused pure expression or super */ null && ([]));
 const addTodoButton = document.getElementById('js-add-todo');
 const clearTodoButton = document.getElementById('js-clear-todo');
 const todoList = document.getElementById('js-todo-list');
@@ -38,7 +44,9 @@ const getTodoTitle = () => {
 // 取得した値をlocalStorageに保存
 const registerLocalStorage = () => {
     const value = getTodoTitle();
-    localStorage.setItem(localStorage.length.toString(), value);
+    const parseData = fetchLocalStorage();
+    parseData.push({ value: value, checked: false });
+    localStorage.setItem('json', JSON.stringify(parseData));
 };
 // リストに新しく追加されたTODOを追加
 const appendListItem = () => {
@@ -51,15 +59,23 @@ const appendListItem = () => {
 const showListItem = () => {
     if (localStorage.length === 0)
         return;
-    for (let i = 0; i < localStorage.length; i++) {
-        const value = localStorage.getItem(`${i}`);
-        if (!value)
-            return;
-        const listItem = createListItem(value, i);
+    const parseData = fetchLocalStorage();
+    for (let i = 0; i < parseData.length; i++) {
+        const itemData = {
+            value: '',
+            checked: false
+        };
+        for (let key in parseData[i]) {
+            itemData[key] = parseData[i][key];
+        }
+        console.log(itemData);
+        const listItem = createListItem(itemData, i);
         todoList.insertAdjacentHTML('afterbegin', listItem);
         const deleteTodoList = document.querySelector('.js-delete-todo');
         const editTodoList = document.querySelector('.js-edit-todo');
+        const checkTodoList = document.querySelector('input[id^="js-checkbox-"]');
         deleteTodoList.addEventListener('click', deleteListItem);
+        checkTodoList.addEventListener('click', updateTodoStatus);
         editTodoList && editTodoList.addEventListener('click', editListItem);
     }
 };
@@ -76,7 +92,7 @@ function editListItem(event) {
     const title = event.target.closest('li').innerText;
     const modalBody = document.getElementById('js-editModal-body');
     const updateTodoBtn = document.getElementById('js-update-todo');
-    const modalBodyContent = jenerateModalBody(id, title);
+    const modalBodyContent = createModalBody(id, title);
     modalBody.innerHTML = modalBodyContent;
     const editInput = document.getElementById('js-edit-todoTitle');
     modal.classList.remove('hidden');
@@ -87,11 +103,14 @@ function editListItem(event) {
 }
 // ListItemの生成
 const createListItem = (argument, index) => {
-    const value = argument ? argument : getTodoTitle();
+    const value = argument ? argument.value : getTodoTitle();
+    const checkStatus = argument && argument.checked;
     const listId = index !== undefined ? index : localStorage.length - 1;
+    const checkedAttribute = checkStatus && ' checked';
+    const inputTag = `<input id="js-checkbox-${listId}" type="checkbox" value="" data-list-id="${listId}" class="col-span-1 inline-block"${checkedAttribute}>`;
     const listItem = `
     <li id=${listId} class="p-2 grid grid-cols-12">
-      <input id="default-checkbox" type="checkbox" value="" class="col-span-1 inline-block">
+      ${inputTag}
       <p class="col-span-9 border-r-2 js-list-title">${value}</p>
       <button class="col-span-1 js-edit-todo" data-modal-toggle="defaultModal">
         <svg
@@ -152,16 +171,20 @@ const updateTodo = () => {
     localStorage.setItem(targetId, updateTitle);
     modal.classList.add('hidden');
     modal.classList.remove(...modalClassSer);
-    //localStorageを更新できていない
+};
+// TODOリストのチェック状態
+const updateTodoStatus = (event) => {
+    const listId = event.target.getAttribute('data-list-id');
+    console.log(listId);
+    //localStorage.setItem(listId, updateTitle);
 };
 // TODOのタイトルが変更された時
 const changeTodoTitle = (event) => {
     const value = event.target.value;
-    console.log(value);
     const editInput = document.getElementById('js-edit-todoTitle');
     editInput.setAttribute('value', value);
 };
-const jenerateModalBody = (id, title) => {
+const createModalBody = (id, title) => {
     const modalBody = `
     <p
       class="text-base leading-relaxed text-gray-500 dark:text-gray-400"
@@ -177,7 +200,7 @@ const jenerateModalBody = (id, title) => {
       現在のタイトル
     </label>
     <input
-      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+      class=""
       id="js-edit-todoTitle"
       type="text"
       placeholder="新しいTODOのタイトルを入力"
@@ -185,6 +208,10 @@ const jenerateModalBody = (id, title) => {
     />
   `;
     return modalBody;
+};
+const fetchLocalStorage = () => {
+    let fetchData = localStorage.getItem('json');
+    return JSON.parse(fetchData);
 };
 // 初期ローディング時に発火させる関数アセット
 function initialize() {
@@ -201,7 +228,7 @@ clearTodoButton.addEventListener('click', clearAllStorageItems);
 /******/ function(__webpack_require__) { // webpackRuntimeModules
 /******/ /* webpack/runtime/getFullHash */
 /******/ (() => {
-/******/ 	__webpack_require__.h = () => ("539ceeee9cea0f168919")
+/******/ 	__webpack_require__.h = () => ("ceba148fad58c0dfdc7f")
 /******/ })();
 /******/ 
 /******/ }
