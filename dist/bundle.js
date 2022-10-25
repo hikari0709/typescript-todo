@@ -69,7 +69,6 @@ const showListItem = () => {
         for (let key in parseData[i]) {
             itemData[key] = parseData[i][key];
         }
-        console.log(itemData);
         const listItem = createListItem(itemData, i);
         todoList.insertAdjacentHTML('afterbegin', listItem);
         const deleteTodoList = document.querySelector('.js-delete-todo');
@@ -176,8 +175,9 @@ const updateTodo = () => {
 // TODOリストのチェック状態
 const updateTodoStatus = (event) => {
     const listId = event.target.getAttribute('data-list-id');
-    console.log(listId);
-    //localStorage.setItem(listId, updateTitle);
+    const parseData = fetchLocalStorage();
+    parseData[listId].checked = !parseData[listId].checked;
+    localStorage.setItem('json', JSON.stringify(parseData));
 };
 // TODOのタイトルが変更された時
 const changeTodoTitle = (event) => {
@@ -295,7 +295,7 @@ clearTodoButton.addEventListener('click', clearAllStorageItems);
 /******/ 	
 /******/ 	/* webpack/runtime/getFullHash */
 /******/ 	(() => {
-/******/ 		__webpack_require__.h = () => ("ceba148fad58c0dfdc7f")
+/******/ 		__webpack_require__.h = () => ("6a057060b51b57e66783")
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
