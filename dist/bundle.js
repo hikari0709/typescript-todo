@@ -6,13 +6,16 @@
 /***/ (() => {
 
 
-// チェックしたものをリロードしたあとも保持させる
-// TODOの詳細を記述できるようにする
-// ※TODOの期限の設定、Googleへの連携
-// TODOのフィルター、並び替え
-// 完了したTODOのリスト→完了したものを戻すこともできるといいか
-// Elementの取得
+// TODOの詳細を保存
+// TODOの期限を保存
+// 上2つの処理はデータがあれば代入、そうでなければ初期値を使う処理を加える
+// TODOのフィルター、並び替えができるようにリストの上に設置する（検索窓？）
+// リストの編集と削除のアイコンの間にディバイダーを設置する
+// 期限や詳細が設定されていることをリストに表示できる
+// 完了したリストに切り替えられる機能を追加
+// 完了したものを戻すこともできる
 const data = (/* unused pure expression or super */ null && ([]));
+const today = new Date();
 const addTodoButton = document.getElementById('js-add-todo');
 const clearTodoButton = document.getElementById('js-clear-todo');
 const todoList = document.getElementById('js-todo-list');
@@ -26,6 +29,12 @@ const modalClassSer = [
     'inset-0',
     'z-40'
 ];
+const date = {
+    year: today.getFullYear(),
+    month: `0${today.getMonth()}`.slice(-2),
+    day: `0${today.getDay()}`.slice(-2)
+};
+const initDateValue = `${date.year}-${date.month}-${date.day}`;
 const appendHandler = (event) => {
     event.preventDefault();
     registerLocalStorage();
@@ -187,13 +196,8 @@ const changeTodoTitle = (event) => {
 };
 const createModalBody = (id, title) => {
     const modalBody = `
-    <p
-      class="text-base leading-relaxed text-gray-500 dark:text-gray-400"
-    >
-      TODOの詳細はここに記載する予定。現在は編集できない状態。
-    </p>
     <label
-      class="block text-gray-700 text-sm font-bold mb-2"
+      class="block text-gray-700 text-sm font-bold mb-1"
       for="js-edit-todoTitle"
       data-id="${id}"
       id="js-edit-label"
@@ -201,12 +205,37 @@ const createModalBody = (id, title) => {
       現在のタイトル
     </label>
     <input
-      class=""
+      class="border p-1 mb-5 w-full"
       id="js-edit-todoTitle"
       type="text"
       placeholder="新しいTODOのタイトルを入力"
       value="${title}"
     />
+    <label
+      class="block text-gray-700 text-sm font-bold mb-1"
+      for="js-edit-todoDetail"
+      data-id="${id}"
+      id="js-edit-detail"
+    >
+      TODOの詳細
+    </label>
+    <textarea
+      class="border mb-5 p-1 w-full"
+      id="js-edit-todoDetail"
+      type="text"
+      placeholder="TODOの詳細"
+      value="${title}"
+    ></textarea>
+    <label for="date" class="block text-gray-700 text-sm font-bold mb-1">TODOの期限を設定</label>
+    <input type="date" id="date" class="border mb-5 w-full p-1" value="${initDateValue}" />
+    <button
+      class="block text-gray-700 text-sm font-bold mb-1"
+      for="js-edit-todoDetail"
+      data-id="${id}"
+      id="js-edit-task"
+    >
+      ＋TODOのサブタスクを追加する
+    </button>
   `;
     return modalBody;
 };
@@ -295,7 +324,7 @@ clearTodoButton.addEventListener('click', clearAllStorageItems);
 /******/ 	
 /******/ 	/* webpack/runtime/getFullHash */
 /******/ 	(() => {
-/******/ 		__webpack_require__.h = () => ("6a057060b51b57e66783")
+/******/ 		__webpack_require__.h = () => ("e20ab564b418fee1d883")
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
