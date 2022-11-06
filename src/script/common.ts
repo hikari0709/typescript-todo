@@ -1,6 +1,4 @@
-// TODOの詳細を保存
 // TODOの期限を保存
-// TODOの詳細を変更した直後に反映されない
 // TODOのフィルター、並び替えができるようにリストの上に設置する（検索窓？）
 // リストの編集と削除のアイコンの間にディバイダーを設置する
 // 期限や詳細が設定されていることをリストに表示できる
@@ -8,7 +6,6 @@
 // 完了したものを戻すこともできる
 
 const data: Array<Object> = [];
-const today: Date = new Date();
 
 const addTodoButton: HTMLElement = document.getElementById('js-add-todo')!;
 const clearTodoButton: HTMLElement = document.getElementById('js-clear-todo')!;
@@ -35,18 +32,6 @@ type DateValue = {
   day: string;
 };
 
-console.log(today.getMonth());
-
-const date: DateValue = {
-  year: today.getFullYear(),
-  month: `0${today.getMonth()}`.slice(-2),
-  day: `0${today.getDay()}`.slice(-2)
-};
-
-console.log(date);
-
-const initDateValue = `${date.year}-${date.month}-${date.day}`;
-
 const handleAppend = (event: any): void => {
   event.preventDefault();
   registerLocalStorage();
@@ -58,7 +43,7 @@ const handleAppend = (event: any): void => {
   deleteTodoList && deleteTodoList.addEventListener('click', deleteListItem);
   const itemData = setItemData();
   editTodoList.addEventListener('click', (event) => {
-    editListItem(event, itemData);
+    editListItem(event);
   });
 };
 
@@ -80,7 +65,7 @@ const registerLocalStorage = (): void => {
     checked: false,
     detail: '',
     subTask: [],
-    date: ''
+    date: createTimeStamp()
   });
   localStorage.setItem('json', JSON.stringify(parseData));
 };
@@ -109,7 +94,7 @@ const showListItem = (): void => {
     deleteTodoList.addEventListener('click', deleteListItem);
     checkTodoList.addEventListener('click', updateTodoStatus);
     editTodoList.addEventListener('click', (event) => {
-      editListItem(event, itemData);
+      editListItem(event);
     });
   }
 };
@@ -143,10 +128,11 @@ function deleteListItem(event: any): void {
 }
 
 // リストアイテムの編集
-function editListItem(event: any, itemData: ItemData): void {
+function editListItem(event: any): void {
   const id = event.target.closest('li').id;
   const modalBody = document.getElementById('js-editModal-body')!;
   const updateTodoBtn = document.getElementById('js-update-todo')!;
+  const itemData = setItemData();
   const modalBodyContent = createModalBody(id, itemData);
 
   modalBody.innerHTML = modalBodyContent;
@@ -210,6 +196,17 @@ const createListItem = (argument?: ItemData, index?: number) => {
 // localStorageに登録されたものを全て削除する
 const clearAllStorageItems = (): void => {
   localStorage.clear();
+};
+
+// TODOを登録した日付を生成する
+const createTimeStamp = () => {
+  const today: Date = new Date();
+  const date: DateValue = {
+    year: today.getFullYear(),
+    month: `0${today.getMonth() + 1}`.slice(-2),
+    day: `0${today.getDate()}`.slice(-2)
+  };
+  return `${date.year}-${date.month}-${date.day}`;
 };
 
 // 入力したテキストをクリアする
@@ -295,7 +292,7 @@ const createModalBody = (id: number, argument: ItemData) => {
       placeholder="TODOの詳細"
     >${argument.detail}</textarea>
     <label class="block text-gray-700 text-sm font-bold mb-1">TODOの期限を設定</label>
-    <input type="date" id="js-edit-date" class="border mb-5 w-full p-1" value="${initDateValue}" />
+    <input type="date" id="js-edit-date" class="border mb-5 w-full p-1" value="${argument.date}" />
     <button
       class="block text-gray-700 text-sm font-bold mb-1"
       for="js-edit-addTask"

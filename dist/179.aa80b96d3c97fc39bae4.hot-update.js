@@ -5,16 +5,13 @@ self["webpackHotUpdatetypescript_dev"](179,{
 /***/ (() => {
 
 
-// TODOの詳細を保存
 // TODOの期限を保存
-// TODOの詳細を変更した直後に反映されない
 // TODOのフィルター、並び替えができるようにリストの上に設置する（検索窓？）
 // リストの編集と削除のアイコンの間にディバイダーを設置する
 // 期限や詳細が設定されていることをリストに表示できる
 // 完了したリストに切り替えられる機能を追加
 // 完了したものを戻すこともできる
 const data = (/* unused pure expression or super */ null && ([]));
-const today = new Date();
 const addTodoButton = document.getElementById('js-add-todo');
 const clearTodoButton = document.getElementById('js-clear-todo');
 const todoList = document.getElementById('js-todo-list');
@@ -28,14 +25,6 @@ const modalClassSer = [
     'inset-0',
     'z-40'
 ];
-console.log(today.getMonth());
-const date = {
-    year: today.getFullYear(),
-    month: `0${today.getMonth()}`.slice(-2),
-    day: `0${today.getDay()}`.slice(-2)
-};
-console.log(date);
-const initDateValue = `${date.year}-${date.month}-${date.day}`;
 const handleAppend = (event) => {
     event.preventDefault();
     registerLocalStorage();
@@ -46,7 +35,7 @@ const handleAppend = (event) => {
     deleteTodoList && deleteTodoList.addEventListener('click', deleteListItem);
     const itemData = setItemData();
     editTodoList.addEventListener('click', (event) => {
-        editListItem(event, itemData);
+        editListItem(event);
     });
 };
 // TODOに登録する【タイトル】の取得
@@ -64,7 +53,7 @@ const registerLocalStorage = () => {
         checked: false,
         detail: '',
         subTask: [],
-        date: ''
+        date: createTimeStamp()
     });
     localStorage.setItem('json', JSON.stringify(parseData));
 };
@@ -90,7 +79,7 @@ const showListItem = () => {
         deleteTodoList.addEventListener('click', deleteListItem);
         checkTodoList.addEventListener('click', updateTodoStatus);
         editTodoList.addEventListener('click', (event) => {
-            editListItem(event, itemData);
+            editListItem(event);
         });
     }
 };
@@ -119,10 +108,11 @@ function deleteListItem(event) {
     localStorage.removeItem(id);
 }
 // リストアイテムの編集
-function editListItem(event, itemData) {
+function editListItem(event) {
     const id = event.target.closest('li').id;
     const modalBody = document.getElementById('js-editModal-body');
     const updateTodoBtn = document.getElementById('js-update-todo');
+    const itemData = setItemData();
     const modalBodyContent = createModalBody(id, itemData);
     modalBody.innerHTML = modalBodyContent;
     const editInput = document.getElementById('js-edit-todoTitle');
@@ -179,6 +169,16 @@ const createListItem = (argument, index) => {
 // localStorageに登録されたものを全て削除する
 const clearAllStorageItems = () => {
     localStorage.clear();
+};
+// TODOを登録した日付を生成する
+const createTimeStamp = () => {
+    const today = new Date();
+    const date = {
+        year: today.getFullYear(),
+        month: `0${today.getMonth() + 1}`.slice(-2),
+        day: `0${today.getDate()}`.slice(-2)
+    };
+    return `${date.year}-${date.month}-${date.day}`;
 };
 // 入力したテキストをクリアする
 const clearTextInput = () => {
@@ -249,7 +249,7 @@ const createModalBody = (id, argument) => {
       placeholder="TODOの詳細"
     >${argument.detail}</textarea>
     <label class="block text-gray-700 text-sm font-bold mb-1">TODOの期限を設定</label>
-    <input type="date" id="js-edit-date" class="border mb-5 w-full p-1" value="${initDateValue}" />
+    <input type="date" id="js-edit-date" class="border mb-5 w-full p-1" value="${argument.date}" />
     <button
       class="block text-gray-700 text-sm font-bold mb-1"
       for="js-edit-addTask"
@@ -280,7 +280,7 @@ clearTodoButton.addEventListener('click', clearAllStorageItems);
 /******/ function(__webpack_require__) { // webpackRuntimeModules
 /******/ /* webpack/runtime/getFullHash */
 /******/ (() => {
-/******/ 	__webpack_require__.h = () => ("7f445b7c96c8990f4581")
+/******/ 	__webpack_require__.h = () => ("6ce8fbe1a38958724df6")
 /******/ })();
 /******/ 
 /******/ }
