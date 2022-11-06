@@ -8,7 +8,7 @@
 
 // TODOの詳細を保存
 // TODOの期限を保存
-// 上2つの処理はデータがあれば代入、そうでなければ初期値を使う処理を加える
+// TODOの詳細を変更した直後に反映されない
 // TODOのフィルター、並び替えができるようにリストの上に設置する（検索窓？）
 // リストの編集と削除のアイコンの間にディバイダーを設置する
 // 期限や詳細が設定されていることをリストに表示できる
@@ -29,13 +29,15 @@ const modalClassSer = [
     'inset-0',
     'z-40'
 ];
+console.log(today.getMonth());
 const date = {
     year: today.getFullYear(),
     month: `0${today.getMonth()}`.slice(-2),
     day: `0${today.getDay()}`.slice(-2)
 };
+console.log(date);
 const initDateValue = `${date.year}-${date.month}-${date.day}`;
-const appendHandler = (event) => {
+const handleAppend = (event) => {
     event.preventDefault();
     registerLocalStorage();
     appendListItem();
@@ -43,7 +45,10 @@ const appendHandler = (event) => {
     const deleteTodoList = document.querySelector('.js-delete-todo');
     const editTodoList = document.querySelector('.js-edit-todo');
     deleteTodoList && deleteTodoList.addEventListener('click', deleteListItem);
-    editTodoList && editTodoList.addEventListener('click', editListItem);
+    const itemData = setItemData();
+    editTodoList.addEventListener('click', (event) => {
+        editListItem(event, itemData);
+    });
 };
 // TODOに登録する【タイトル】の取得
 const getTodoTitle = () => {
@@ -54,30 +59,30 @@ const getTodoTitle = () => {
 // 取得した値をlocalStorageに保存
 const registerLocalStorage = () => {
     const value = getTodoTitle();
-    const parseData = fetchLocalStorage();
-    parseData.push({ value: value, checked: false });
+    const parseData = localStorage.length ? fetchLocalStorage() : [];
+    parseData.push({
+        title: value,
+        checked: false,
+        detail: '',
+        subTask: [],
+        date: ''
+    });
     localStorage.setItem('json', JSON.stringify(parseData));
 };
-// リストに新しく追加されたTODOを追加
+// TODOの追加
 const appendListItem = () => {
     if (!todoList)
         return;
     const listItem = createListItem();
     todoList.insertAdjacentHTML('afterbegin', listItem);
 };
-// リロードした際にlacalStorageにあるデータを表示する
+// ページが再描画された際にlocalStorageにあるデータを表示する
 const showListItem = () => {
     if (localStorage.length === 0)
         return;
     const parseData = fetchLocalStorage();
+    const itemData = setItemData();
     for (let i = 0; i < parseData.length; i++) {
-        const itemData = {
-            value: '',
-            checked: false
-        };
-        for (let key in parseData[i]) {
-            itemData[key] = parseData[i][key];
-        }
         const listItem = createListItem(itemData, i);
         todoList.insertAdjacentHTML('afterbegin', listItem);
         const deleteTodoList = document.querySelector('.js-delete-todo');
@@ -85,8 +90,27 @@ const showListItem = () => {
         const checkTodoList = document.querySelector('input[id^="js-checkbox-"]');
         deleteTodoList.addEventListener('click', deleteListItem);
         checkTodoList.addEventListener('click', updateTodoStatus);
-        editTodoList && editTodoList.addEventListener('click', editListItem);
+        editTodoList.addEventListener('click', (event) => {
+            editListItem(event, itemData);
+        });
     }
+};
+// localStrageのデータをfeatchからイベントの登録までのイベント
+const setItemData = () => {
+    const parseData = fetchLocalStorage();
+    const itemData = {
+        title: '',
+        checked: false,
+        detail: '',
+        subTask: [],
+        date: ''
+    };
+    for (let i = 0; i < parseData.length; i++) {
+        for (let key in parseData[i]) {
+            itemData[key] = parseData[i][key];
+        }
+    }
+    return itemData;
 };
 // リストアイテムの削除
 function deleteListItem(event) {
@@ -96,12 +120,11 @@ function deleteListItem(event) {
     localStorage.removeItem(id);
 }
 // リストアイテムの編集
-function editListItem(event) {
+function editListItem(event, itemData) {
     const id = event.target.closest('li').id;
-    const title = event.target.closest('li').innerText;
     const modalBody = document.getElementById('js-editModal-body');
     const updateTodoBtn = document.getElementById('js-update-todo');
-    const modalBodyContent = createModalBody(id, title);
+    const modalBodyContent = createModalBody(id, itemData);
     modalBody.innerHTML = modalBodyContent;
     const editInput = document.getElementById('js-edit-todoTitle');
     modal.classList.remove('hidden');
@@ -112,7 +135,7 @@ function editListItem(event) {
 }
 // ListItemの生成
 const createListItem = (argument, index) => {
-    const value = argument ? argument.value : getTodoTitle();
+    const title = argument ? argument.title : getTodoTitle();
     const checkStatus = argument && argument.checked;
     const listId = index !== undefined ? index : localStorage.length - 1;
     const checkedAttribute = checkStatus && ' checked';
@@ -120,7 +143,7 @@ const createListItem = (argument, index) => {
     const listItem = `
     <li id=${listId} class="p-2 grid grid-cols-12">
       ${inputTag}
-      <p class="col-span-9 border-r-2 js-list-title">${value}</p>
+      <p class="col-span-9 border-r-2 js-list-title">${title}</p>
       <button class="col-span-1 js-edit-todo" data-modal-toggle="defaultModal">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -170,14 +193,18 @@ const closeModal = () => {
 };
 // TODOリストタイトルの更新
 const updateTodo = () => {
-    // js-current-todo-title　→ 中身にタイトルの要素がないので命名を変更する
     const label = document.getElementById('js-edit-label');
-    const editInput = document.getElementById('js-edit-todoTitle');
+    const editTitle = (document.getElementById('js-edit-todoTitle'));
+    const editDetail = (document.getElementById('js-edit-todoDetail'));
     const targetId = label.getAttribute('data-id');
-    const targetList = document.querySelector(`#\\3${targetId} > .js-list-title`);
-    const updateTitle = editInput.getAttribute('value');
-    targetList.textContent = updateTitle;
-    localStorage.setItem(targetId, updateTitle);
+    const targetTitle = document.querySelector(`#\\3${targetId} > .js-list-title`);
+    const updateTitle = editTitle.value;
+    const updateDetail = editDetail.value;
+    targetTitle.textContent = updateTitle;
+    const parseData = fetchLocalStorage();
+    parseData[targetId].title = updateTitle;
+    parseData[targetId].detail = updateDetail;
+    localStorage.setItem('json', JSON.stringify(parseData));
     modal.classList.add('hidden');
     modal.classList.remove(...modalClassSer);
 };
@@ -194,11 +221,10 @@ const changeTodoTitle = (event) => {
     const editInput = document.getElementById('js-edit-todoTitle');
     editInput.setAttribute('value', value);
 };
-const createModalBody = (id, title) => {
+const createModalBody = (id, argument) => {
     const modalBody = `
     <label
       class="block text-gray-700 text-sm font-bold mb-1"
-      for="js-edit-todoTitle"
       data-id="${id}"
       id="js-edit-label"
     >
@@ -209,28 +235,25 @@ const createModalBody = (id, title) => {
       id="js-edit-todoTitle"
       type="text"
       placeholder="新しいTODOのタイトルを入力"
-      value="${title}"
+      value="${argument.title}"
     />
     <label
       class="block text-gray-700 text-sm font-bold mb-1"
-      for="js-edit-todoDetail"
       data-id="${id}"
       id="js-edit-detail"
     >
       TODOの詳細
     </label>
     <textarea
-      class="border mb-5 p-1 w-full"
+      class="border mb-5 p-1 w-full h-40"
       id="js-edit-todoDetail"
-      type="text"
       placeholder="TODOの詳細"
-      value="${title}"
-    ></textarea>
-    <label for="date" class="block text-gray-700 text-sm font-bold mb-1">TODOの期限を設定</label>
-    <input type="date" id="date" class="border mb-5 w-full p-1" value="${initDateValue}" />
+    >${argument.detail}</textarea>
+    <label class="block text-gray-700 text-sm font-bold mb-1">TODOの期限を設定</label>
+    <input type="date" id="js-edit-date" class="border mb-5 w-full p-1" value="${initDateValue}" />
     <button
       class="block text-gray-700 text-sm font-bold mb-1"
-      for="js-edit-todoDetail"
+      for="js-edit-addTask"
       data-id="${id}"
       id="js-edit-task"
     >
@@ -240,15 +263,15 @@ const createModalBody = (id, title) => {
     return modalBody;
 };
 const fetchLocalStorage = () => {
-    let fetchData = localStorage.getItem('json');
+    const fetchData = localStorage.getItem('json');
     return JSON.parse(fetchData);
 };
-// 初期ローディング時に発火させる関数アセット
+// 初期ローディング時に発火させる
 function initialize() {
     showListItem();
 }
 initialize();
-addTodoButton.addEventListener('click', appendHandler);
+addTodoButton.addEventListener('click', handleAppend);
 clearTodoButton.addEventListener('click', clearAllStorageItems);
 
 
@@ -324,7 +347,7 @@ clearTodoButton.addEventListener('click', clearAllStorageItems);
 /******/ 	
 /******/ 	/* webpack/runtime/getFullHash */
 /******/ 	(() => {
-/******/ 		__webpack_require__.h = () => ("e20ab564b418fee1d883")
+/******/ 		__webpack_require__.h = () => ("7f445b7c96c8990f4581")
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
