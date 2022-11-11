@@ -1,10 +1,3 @@
-// TODOの期限を保存
-// TODOのフィルター、並び替えができるようにリストの上に設置する（検索窓？）
-// リストの編集と削除のアイコンの間にディバイダーを設置する
-// 期限や詳細が設定されていることをリストに表示できる
-// 完了したリストに切り替えられる機能を追加
-// 完了したものを戻すこともできる
-
 const data: Array<Object> = [];
 
 const addTodoButton: HTMLElement = document.getElementById('js-add-todo')!;
@@ -22,8 +15,18 @@ const modalClassSer = [
   'z-40'
 ];
 
+type SubTask = {
+  id: string;
+  value: string;
+  checked: boolean;
+};
+
+type InnerArray = {
+  [key: number]: SubTask;
+};
+
 type ItemData = {
-  [key: string]: string | boolean | Array<string>;
+  [key: string]: string | boolean | SubTask[];
 };
 
 type DateValue = {
@@ -130,21 +133,62 @@ function deleteListItem(event: any): void {
 // リストアイテムの編集
 function editListItem(event: any): void {
   const id = event.target.closest('li').id;
-  const modalBody = document.getElementById('js-editModal-body')!;
-  const updateTodoBtn = document.getElementById('js-update-todo')!;
+  const modalBody = <HTMLDivElement>(
+    document.getElementById('js-editModal-body')
+  );
+  const updateTodoBtn = <HTMLDivElement>(
+    document.getElementById('js-update-todo')
+  );
   const itemData = setItemData();
   const modalBodyContent = createModalBody(id, itemData);
 
   modalBody.innerHTML = modalBodyContent;
 
-  const editInput = document.getElementById('js-edit-todoTitle')!;
+  const editInput = <HTMLInputElement>(
+    document.getElementById('js-edit-todoTitle')
+  );
+  const addTask = <HTMLButtonElement>document.getElementById('js-edit-task');
+  const subTaskCheckbox = document.querySelectorAll('.js-subTask-checkbox');
+
+  subTaskCheckbox.forEach((target) => {
+    target.addEventListener('click', (event: any) => {
+      const subTaskId = event.currentTarget.getAttribute('data-subTask-id');
+      const parseData = fetchLocalStorage();
+      parseData[id].subTask[subTaskId].checked =
+        !parseData[id].subTask[subTaskId].checked;
+      localStorage.setItem('json', JSON.stringify(parseData));
+    });
+  });
 
   modal.classList.remove('hidden');
   modal.classList.add(...modalClassSer);
   modalCloseBtn.addEventListener('click', closeModal);
   updateTodoBtn.addEventListener('click', updateTodo);
+  addTask.addEventListener('click', addsubTask);
   editInput.addEventListener('change', changeTodoTitle);
 }
+
+const addsubTask = () => {
+  const taskInput = <HTMLInputElement>(
+    document.getElementById('js-edit-task-input')
+  );
+  const taskList = <HTMLInputElement>document.getElementById('js-subTask-list');
+
+  const targetId = taskInput.getAttribute('data-id')!;
+  const parseData = fetchLocalStorage();
+  const taskId = parseData[targetId].subTask.length;
+  const task: SubTask = { id: taskId, value: taskInput.value, checked: false };
+  parseData[targetId].subTask.push(task);
+  const listItem = `
+    <li>
+      <input id="subTask${taskId}" data-subTask-id="${taskId}" type="checkbox" class="col-span-1 inline-block js-subTask-checkbox">
+      <label for="subTask${taskId}">${taskInput.value}</label>
+    </li>
+  `;
+  taskList.insertAdjacentHTML('beforeend', listItem);
+  taskInput.value = '';
+  localStorage.setItem('json', JSON.stringify(parseData));
+};
 
 // ListItemの生成
 const createListItem = (argument?: ItemData, index?: number) => {
@@ -232,6 +276,7 @@ const updateTodo = () => {
   const editDetail = <HTMLInputElement>(
     document.getElementById('js-edit-todoDetail')
   );
+  const editDate = <HTMLInputElement>document.getElementById('js-edit-date');
   const targetId = label.getAttribute('data-id')!;
   const targetTitle = document.querySelector(
     `#\\3${targetId} > .js-list-title`
@@ -239,10 +284,12 @@ const updateTodo = () => {
 
   const updateTitle = editTitle.value;
   const updateDetail = editDetail.value;
+  const updateDate = editDate.value;
   targetTitle.textContent = updateTitle;
   const parseData = fetchLocalStorage();
   parseData[targetId].title = updateTitle;
   parseData[targetId].detail = updateDetail;
+  parseData[targetId].date = updateDate;
   localStorage.setItem('json', JSON.stringify(parseData));
   modal.classList.add('hidden');
   modal.classList.remove(...modalClassSer);
@@ -264,6 +311,18 @@ const changeTodoTitle = (event: any) => {
 };
 
 const createModalBody = (id: number, argument: ItemData) => {
+  const subTask = argument['subTask'] as InnerArray;
+  let subTaskList: string = '';
+  for (let i: number = 0; i < Object.keys(subTask).length; i++) {
+    const checkedAttribute = subTask[i].checked && ' checked';
+    subTaskList += `
+    <li>
+      <input id="subTask${subTask[i].id}" data-subTask-id="${subTask[i].id}" type="checkbox" class="col-span-1 inline-block js-subTask-checkbox"${checkedAttribute}>
+      <label for="subTask${subTask[i].id}">${subTask[i].value}</label>
+    </li>
+  `;
+  }
+
   const modalBody: string = `
     <label
       class="block text-gray-700 text-sm font-bold mb-1"
@@ -293,14 +352,21 @@ const createModalBody = (id: number, argument: ItemData) => {
     >${argument.detail}</textarea>
     <label class="block text-gray-700 text-sm font-bold mb-1">TODOの期限を設定</label>
     <input type="date" id="js-edit-date" class="border mb-5 w-full p-1" value="${argument.date}" />
-    <button
-      class="block text-gray-700 text-sm font-bold mb-1"
-      for="js-edit-addTask"
-      data-id="${id}"
-      id="js-edit-task"
-    >
-      ＋TODOのサブタスクを追加する
-    </button>
+    <label class="block text-gray-700 text-sm font-bold mb-1">サブタスクを追加する</label>
+    <div class="grid grid-cols-4 mb-2">
+      <input type="input" id="js-edit-task-input" class="border col-span-3 p-1" value="" data-id="${id}"/>
+      <button
+        type="button"
+        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 col-span-1 ml-2"
+        data-id="${id}"
+        id="js-edit-task"
+      >
+        Add Task
+      </button>
+    </div>
+    <ul id="js-subTask-list">
+      ${subTaskList}
+    </ul>
   `;
 
   return modalBody;
